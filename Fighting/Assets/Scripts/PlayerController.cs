@@ -24,9 +24,8 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
-        
-
         GroundCheck();
+        JumpPlayer();
         Flip();
     }
 
@@ -36,6 +35,7 @@ public class PlayerController : MonoBehaviour
         {
             _rigidbody.velocity = new Vector2(_joystick.Horizontal * _speed, _rigidbody.velocity.y);
             _animator.SetInteger("State", 2);
+            _isGrounded = true;
         }
     }
 
@@ -52,23 +52,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    /*private void JumpPlayer()
+    private void JumpPlayer()
     {
-        if (_joystick.Vertical >= .3f && _isGrounded && !_isAttacking)
+        if (_joystick.Vertical >= .9f && _isGrounded && !_isAttacking)
         {
             //_rigidbody.velocity = Vector2.up * _jumpHeight;
             _rigidbody.AddForce(transform.up * _jumpHeight, ForceMode2D.Impulse);
             _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, _jumpHeight);
             _animator.SetInteger("State", 3);
         }
-    }*/
+    }
 
     public void OnJumpButtonDown()
     {
-        if (_isGrounded && !_isAttacking)
+        print("NotJump");
+        
+        if (_isGrounded)
         {
             _rigidbody.AddForce(transform.up * _jumpHeight, ForceMode2D.Impulse);
             _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, _jumpHeight);
+            //_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _jumpHeight);
             print("jump");
         }
     }
@@ -89,6 +92,14 @@ public class PlayerController : MonoBehaviour
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsGround);
         _isGrounded = colliders.Length > 1;
+        if (_isGrounded)
+        {
+            print("groundOn");
+        }
+        if (!_isGrounded)
+        {
+            print("groundOff");
+        }
     }
 
     public void OnAttackButtonDown()
@@ -96,7 +107,8 @@ public class PlayerController : MonoBehaviour
         if (!_isAttacking)
         {
             _isAttacking = true;
-            _animator.SetInteger("State", 7);
+            //_animator.SetInteger("State", 7);
+            _animator.Play("Swordsman_attack");
             StartCoroutine(DoAttack());
         }
     }
@@ -104,7 +116,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator DoAttack()
     {
         _sword.SetActive(true);
-        yield return new WaitForSeconds(.3f);
+        yield return new WaitForSeconds(1f);
         _sword.SetActive(false);
         _isAttacking = false;
     }
