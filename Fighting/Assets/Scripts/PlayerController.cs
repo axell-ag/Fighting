@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : HealthController
 {
     private Animator _animator;
     private Rigidbody2D _rigidbody;
@@ -15,10 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Joystick _joystick;
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private GameObject _sword;
-
-    protected float _health;
-    protected float _armor;
-    protected float _damage;
+    [SerializeField] private Transform _enemyDetect;
 
 
     public void OnAttackButtonDown()
@@ -26,6 +23,7 @@ public class PlayerController : MonoBehaviour
         if (!_isAttacking)
         {
             _isAttacking = true;
+            PlayerAttack();
             _animator.SetInteger("State", 7);
             StartCoroutine(DoAttack());
         }
@@ -37,8 +35,10 @@ public class PlayerController : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _sword.SetActive(false);
-        _health = 100f;
-        _damage = 7f;
+        Health = 100f;
+        Damage = 7f;
+        Armor = 20f;
+        
     }
     private void Update()
     {
@@ -98,22 +98,15 @@ public class PlayerController : MonoBehaviour
         _isAttacking = false;
     }
 
-    protected void OnTriggerEnter2D(Collider2D collision)
+
+
+    private void PlayerAttack()
     {
-        if (collision.gameObject.name == "Sword")
+        RaycastHit2D enemyCheck = Physics2D.Raycast(_enemyDetect.position, Vector2.left, .1f);
+        
+        if (enemyCheck.collider == true)
         {
-            _health -= _damage;
-            print(_health);
-
-            if (_health < 0)
-            {
-                gameObject.SetActive(false);
-            }
+            print("нанесли урон");
         }
-    }
-
-    protected void TakeDamage(float damage)
-    {
-
     }
 }

@@ -4,15 +4,26 @@ using UnityEngine;
 
 public class HealthController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public float Health;
+    public float Armor;
+    public float Damage;
+
+    protected void Start()
     {
-        
+        if (Health <= 0f)
+        {
+            Health = 100f;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TakeDamage(float Damage)
     {
-        
+        Health -= Damage;
+        print("получили урон");
+
+        if (Health <= 0)
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
