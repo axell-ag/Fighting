@@ -15,7 +15,8 @@ public class PlayerController : HealthController
     [SerializeField] private Joystick _joystick;
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private GameObject _sword;
-    [SerializeField] private Transform _enemyDetect;
+    public PlayerAttack _attack;
+    //[SerializeField] private Transform _enemyDetect;
 
 
     public void OnAttackButtonDown()
@@ -23,21 +24,23 @@ public class PlayerController : HealthController
         if (!_isAttacking)
         {
             _isAttacking = true;
-            PlayerAttack();
+            //_attack.Attack();
             _animator.SetInteger("State", 7);
             StartCoroutine(DoAttack());
         }
 
     }
 
-    private void Start()
+    private new void Start()
     {
+        _attack = GetComponent<PlayerAttack>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _sword.SetActive(false);
-        Health = 100f;
-        Damage = 7f;
-        Armor = 20f;
+        Health = 70f;
+        print(Health);
+        //Damage = 7f;
+        //Armor = 20f;
         
     }
     private void Update()
@@ -100,7 +103,7 @@ public class PlayerController : HealthController
 
 
 
-    private void PlayerAttack()
+    /*private void PlayerAttack()
     {
         RaycastHit2D enemyCheck = Physics2D.Raycast(_enemyDetect.position, Vector2.left, .1f);
         
@@ -108,5 +111,5 @@ public class PlayerController : HealthController
         {
             print("нанесли урон");
         }
-    }
+    }*/
 }

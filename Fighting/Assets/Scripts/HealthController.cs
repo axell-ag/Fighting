@@ -16,11 +16,11 @@ public class HealthController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float Damage)
+    public void TakeDamage(int Damage)
     {
         Health -= Damage;
         print("получили урон");
-
+        print(Health);
         if (Health <= 0)
         {
             gameObject.SetActive(false);
