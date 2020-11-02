@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : HealthController
+public class PlayerController : MonoBehaviour
 {
     private Animator _animator;
     private Rigidbody2D _rigidbody;
@@ -10,6 +10,7 @@ public class PlayerController : HealthController
     private float _jumpHeight = 10f;
     private bool _isGrounded = true;
     private bool _isAttacking = false;
+    private HealthController healthController;
 
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private Joystick _joystick;
@@ -18,27 +19,29 @@ public class PlayerController : HealthController
     public PlayerAttack _attack;
     //[SerializeField] private Transform _enemyDetect;
 
-
+    private float Health;
     public void OnAttackButtonDown()
     {
         if (!_isAttacking)
         {
             _isAttacking = true;
-            //_attack.Attack();
+            _attack.Attack();
             _animator.SetInteger("State", 7);
             StartCoroutine(DoAttack());
         }
 
     }
 
-    private new void Start()
+    private void Start()
     {
+        healthController = new HealthController() { Damage = 6f, Armor = 5f };
+        healthController.Armor = 7f;
         _attack = GetComponent<PlayerAttack>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _sword.SetActive(false);
         Health = 70f;
-        print(Health);
+       // print(Health);
         //Damage = 7f;
         //Armor = 20f;
         
@@ -112,4 +115,6 @@ public class PlayerController : HealthController
             print("нанесли урон");
         }
     }*/
+
+   
 }

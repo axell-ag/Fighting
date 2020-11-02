@@ -5,22 +5,27 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     [SerializeField] private Transform _enemyDetect;
-    public float Health;
-    public float Armor;
+    //public float Health;
+    //public float Armor;
     public int _damage = 7;
-    [SerializeField] private GameObject _destroy;
+    //Enemy enemy;
+    //PlayerController PlayerController;
 
 
-
+    private void Start()
+    {
+        //enemy = gameObject.GetComponent<Enemy>();
+        //PlayerController = gameObject.GetComponent<PlayerController>();
+    }
     private void Update()
     {
         
     }
 
-    public void OnAttackButtonDown()
+    /*public void OnAttackButtonDown()
     {
         Attack();
-    }
+    }*/
 
     public void Attack()
     {
@@ -28,15 +33,20 @@ public class PlayerAttack : MonoBehaviour
 
         if (enemyCheck.collider)
         {
-            HealthController Health = GetComponent<HealthController>();
-            Enemy enemy = GetComponent<Enemy>();
-            print("нанесли урон");
+            Enemy enemy = new Enemy() { Health = 100f };
+            //Enemy enemy = gameObject.GetComponent<Enemy>();
+                //TestControler testControler = gameObject.GetComponent<TestControler>();
+            print("нанесли уронa");
             //Health -= Damage;
             //print(Health);
-            if (Health != null)
+            //print(PlayerEnemy);
+            //print(enemy.Health);
+            //print(Health);
+            if (enemy.Health > 0)
             {
-                Health.TakeDamage(_damage);
-                //return;
+                print("получили урон");
+                enemy.TakeDamage(_damage);
+                return;
             }
         }
     }

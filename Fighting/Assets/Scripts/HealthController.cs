@@ -16,7 +16,7 @@ public class HealthController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int Damage)
+    /*public void TakeDamage(int Damage)
     {
         Health -= Damage;
         print("получили урон");
@@ -25,5 +25,5 @@ public class HealthController : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
-    }
+    }*/
 }
