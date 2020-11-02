@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    [SerializeField] private Transform _enemyDetect;
+    /*[SerializeField] private Transform _enemyDetect;
     //public float Health;
     //public float Armor;
     public int _damage = 7;
@@ -22,12 +22,12 @@ public class PlayerAttack : MonoBehaviour
         
     }
 
-    /*public void OnAttackButtonDown()
+    *//*public void OnAttackButtonDown()
     {
         Attack();
-    }*/
+    }*//*
 
-    public void Attack()
+    public void Attack() 
     {
         RaycastHit2D enemyCheck = Physics2D.Raycast(_enemyDetect.position, Vector2.left, .1f);
 
@@ -49,5 +49,28 @@ public class PlayerAttack : MonoBehaviour
                 return;
             }
         }
+    }*/
+
+
+    [SerializeField] private Transform _attackPose;
+    [SerializeField] private float _attackRange;
+    [SerializeField] private LayerMask _wahtIsEnemy;
+    [SerializeField] private int _damage;
+
+    public void Attack ()
+    {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                print("итерация");
+                print(i);
+                colliders[i].GetComponent<Enemy>().TakeDamage(_damage);
+            }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(_attackPose.position, _attackRange);
     }
 }
