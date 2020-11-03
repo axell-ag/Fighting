@@ -2,26 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : CharacterController
 {
-    
-    public float Health;
-   
-    private void Start()
+    private new void Start()
     {
-        Health = 90f;
-        print(Health);
-       
+        _health = 90f;
+        print(_health);
     }
 
-    public void TakeDamage(int Damage)
+
+    public new void TakeDamage(int Damage)
     {
-        Health -= Damage;
+        _health -= Damage;
         print("получили урон");
-        print(Health);
-        if (Health <= 0)
+        print(_health);
+        if (_health <= 0)
         {
             gameObject.SetActive(false);
         }
     }
+
 }
