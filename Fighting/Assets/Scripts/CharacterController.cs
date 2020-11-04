@@ -18,12 +18,14 @@ public class CharacterController : MonoBehaviour
     {
 
     }    
-    public void TakeDamage(int Damage)
+    /*public void TakeDamage(int Damage)
     {
         _health -= Damage;
         if (_health <= 0)
         {
+            print("получили урон от бота");
+            print(_health);
             gameObject.SetActive(false);
         }
-    }
+    }*/
 }

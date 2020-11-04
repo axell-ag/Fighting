@@ -14,7 +14,7 @@ public class CharacterAttack : MonoBehaviour
             Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
             for (int i = 0; i < colliders.Length; i++)
             {
-                colliders[i].GetComponent<Enemy>().TakeDamage(_damage);
+                //colliders[i].GetComponent<Enemy>().TakeDamage(_damage);
             }
     }
 

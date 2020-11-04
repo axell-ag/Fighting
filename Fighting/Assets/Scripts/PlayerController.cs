@@ -7,17 +7,6 @@ public class PlayerController : CharacterController
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private Joystick _joystick;
     [SerializeField] private LayerMask _whatIsGround;
-
-    /*private float _health;
-    private float _armor;
-    private float _damage;
-    private Animator _animator;
-    private Rigidbody2D _rigidbody;
-    private float _speed;
-    private float _jumpHeight;
-    private bool _isGrounded = true;
-    private bool _isAttacking = false;*/
-
     [SerializeField] private CharacterAttack _characterAttack;
 
     public void OnAttackButtonDown()
@@ -25,9 +14,9 @@ public class PlayerController : CharacterController
         if (!_isAttacking)
         {
             _isAttacking = true;
-            _characterAttack = new CharacterAttack { };
+            //_characterAttack = new CharacterAttack { };
             _characterAttack.Attack();
-            _animator.SetInteger("State", 1);
+            _animator.SetInteger("StateSwordsman", 5);
             StartCoroutine(DoAttack());   
         }
     }
@@ -37,6 +26,7 @@ public class PlayerController : CharacterController
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _health = 100f;
+        print(_health);
         _speed = 8f;
         _jumpHeight = 10f;
         _isAttacking = false;
@@ -54,20 +44,19 @@ public class PlayerController : CharacterController
 
     private void MovePlayer()
     {
-        if (_joystick.Horizontal != 0 && !_isAttacking)
+        if (_joystick.Horizontal != 0 && !_isAttacking && _health > 0 && _isGrounded)
         {
             _rigidbody.velocity = new Vector2(_joystick.Horizontal * _speed, _rigidbody.velocity.y);
-            _animator.SetInteger("State", 7);
+            _animator.SetInteger("StateSwordsman", 2);
         }
-        else if (_joystick.Horizontal == 0 && !_isAttacking)
+        else if (_joystick.Horizontal == 0 && !_isAttacking && _health > 0)
         {
-            _animator.SetInteger("State", 5);
+            _animator.SetInteger("StateSwordsman", 1);
         }
 
-        if (_joystick.Vertical >= .9f && _isGrounded && !_isAttacking)
+        if (_joystick.Vertical >= .9f && _isGrounded && !_isAttacking && _health > 0)
         {
             _rigidbody.velocity = Vector2.up * _jumpHeight;
-            _animator.SetInteger("State", 6);
         }
     }
 
@@ -87,11 +76,33 @@ public class PlayerController : CharacterController
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsGround);
         _isGrounded = colliders.Length > 1;
+        if (!_isGrounded)
+        {
+            _animator.SetInteger("StateSwordsman", 3);
+        }
+    }
+
+    public void TakeDamage(int Damage)
+    {
+        _health -= Damage;
+        _animator.SetInteger("StateSwordsman", 4);
+        if (_health <= 0)
+        {
+            _animator.SetInteger("StateSwordsman", 6);
+            StartCoroutine(PlayerDies());
+            //gameObject.SetActive(false);
+        }
     }
 
     private IEnumerator DoAttack()
     {
         yield return new WaitForSeconds(.4f);
         _isAttacking = false;
+    }
+
+    private IEnumerator PlayerDies()
+    {
+        yield return new WaitForSeconds(2f);
+        gameObject.SetActive(false);
     }
 }
