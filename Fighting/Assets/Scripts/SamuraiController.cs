@@ -24,39 +24,24 @@ public class SamuraiController : MonoBehaviour
     private bool _isGrounded = true;
     private bool _isAttacking = true;
 
-    private bool _moveRight;
     [SerializeField] private Transform _player;
     private bool _chill = false;
     private bool _angry = false;
     private bool _goBack = false;
 
-    /*public void OnAttackButtonDown()
-    {
-        if (!_isAttacking)
-        {
-            _isAttacking = true;
-            _characterAttack.Attack();
-            _animator.SetInteger("StateSamurai", 3);
-            StartCoroutine(DoAttack());
-        }
-    }*/
-
     public void Attack()
     {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                colliders[i].GetComponent<PlayerController>().TakeDamage(_damage);
-            }
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].GetComponent<PlayerController>().TakeDamage(_damage);
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.gameObject.name == "Player" && _isAttacking)
         {
-            /*_animator.SetInteger("StateSamurai", 3);
-            print("Нанесли урон игроку");
-            Attack();*/
             StartCoroutine(DoAttack());
         }
     }
@@ -74,44 +59,14 @@ public class SamuraiController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _health = 100f;
-        _speed = 10f;
+        _speed = 5f;
         _jumpHeight = 12f;
-        //_player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void Update()
     {
         GroundCheck();
-        
-        if (Vector2.Distance(transform.position, _point.position) < _positionOfPatrol && _angry)
-        {
-            _chill = true;
-        }
-
-        if (Vector2.Distance(transform.position, _player.position) < _stoppingDistance)
-        {
-            _angry = true;
-            _chill = false;
-            _goBack = false;
-        }
-        if (Vector2.Distance(transform.position, _player.position) > _stoppingDistance)
-        {
-            _goBack = true;
-            _angry = false;
-        }
-
-        if (_chill)
-        {
-            Chill();
-        }
-        if (_angry)
-        {
-            Angry();
-        }
-        if (_goBack)
-        {
-            GoBack();
-        }
+        Angry();
     }
 
     private void GroundCheck()
@@ -127,42 +82,43 @@ public class SamuraiController : MonoBehaviour
         print("Нанесли урон игроку");
         Attack();
         yield return new WaitForSeconds(1f);
-        /*_animator.SetInteger("StateSamurai", 3);
-        print("Нанесли урон игроку");
-        Attack();*/
         _animator.SetInteger("StateSamurai", 1);
         _isAttacking = true;
         print(_isAttacking);
     }
 
-    private void Chill()
-    {
-        if (transform.position.x > _point.position.x + _positionOfPatrol)
-        {
-            _moveRight = true;
-        }
-        else if (transform.position.x < _point.position.x - _positionOfPatrol)
-        {
-            _moveRight = false;
-        }
-
-        if (_moveRight)
-        {
-            transform.position = new Vector2(transform.position.x + _speed * Time.deltaTime, transform.position.y);
-        }
-        else
-        {
-            transform.position = new Vector2(transform.position.x - _speed * Time.deltaTime, transform.position.y);
-        }
-    }
-
     private void Angry()
     {
-        transform.position = Vector2.MoveTowards(transform.position, _player.position, _speed * Time.deltaTime);
+        //transform.position = Vector2.MoveTowards(transform.position, _player.position, _speed * Time.deltaTime);
+        /*if (Vector2.Distance(transform.position, _player.position) < 2f)
+        {
+            // Swap the position of the cylinder.
+            //transform.position = new Vector2(transform.position.x - .5f, transform.position.y);
+            //transform.position = transform.position;
+            _animator.SetInteger("StateSamurai", 3);
+        }*/
+        if (Vector2.Distance(transform.position, _player.position) > 2f)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, _player.position, _speed * Time.deltaTime);
+            _animator.SetInteger("StateSamurai", 2);
+        }
+
+
+        if (transform.position.x < _player.position.x)
+        {
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+        }
+        else if (transform.position.x > _player.position.x)
+        {
+            transform.localRotation = Quaternion.Euler(0, 180, 0);
+        }
     }
 
-    private void GoBack()
+    /*private void OnCollisionEnter2D(Collision2D collision)
     {
-        transform.position = Vector2.MoveTowards(transform.position, _point.position, _speed * Time.deltaTime);
-    }
+        if (collision.gameObject.name == "Player")
+        {
+            collision.gameObject.GetComponent<Rigidbody2D>().AddForce(transform.up * 5f, ForceMode2D.Impulse);
+        }
+    }*/
 }
