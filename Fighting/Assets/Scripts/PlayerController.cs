@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _wahtIsEnemy;
     [SerializeField] private float _attackRange;
+    [SerializeField] private Text _textHp;
+    [SerializeField] private GameObject _effect;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;
@@ -17,8 +20,8 @@ public class PlayerController : MonoBehaviour
     private int _damage;
     [SerializeField] private float _health;
     private float _armor;
-    private float _speed = 5f;
-    private float _jumpHeight = 10f;
+    private float _speed = 7f;
+    private float _jumpHeight = 12f;
     private bool _isGrounded = true;
     private bool _isAttacking = false;
 
@@ -42,6 +45,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
+    /*private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            Instantiate(_effect, transform.position, transform.rotation);
+            Destroy(gameObject);
+        }
+    }*/
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -59,6 +71,7 @@ public class PlayerController : MonoBehaviour
     {
         GroundCheck();
         Flip();
+        _textHp.text = _health.ToString();
     }
 
     private void FixedUpdate()
@@ -68,13 +81,15 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
-        if (_joystick.Horizontal != 0 && !_isAttacking && _health > 0 && _isGrounded)
+        if (_joystick.Horizontal != 0 && !_isAttacking && _health > 0)
         {
             _rigidbody.velocity = new Vector2(_joystick.Horizontal * _speed, _rigidbody.velocity.y);
+            _effect.SetActive(true);
             _animator.SetInteger("StateSwordsman", 2);
         }
         else if (_joystick.Horizontal == 0 && !_isAttacking && _health > 0)
         {
+            _effect.SetActive(false);
             _animator.SetInteger("StateSwordsman", 1);
         }
 
@@ -121,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator DoAttack()
     {
-        yield return new WaitForSeconds(.4f);
+        yield return new WaitForSeconds(.6f);
         _isAttacking = false;
     }
 

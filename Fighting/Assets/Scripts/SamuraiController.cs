@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SamuraiController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class SamuraiController : MonoBehaviour
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _wahtIsEnemy;
     [SerializeField] private float _attackRange;
+    [SerializeField] private Text _textHp;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;
@@ -64,6 +66,7 @@ public class SamuraiController : MonoBehaviour
     {
         GroundCheck();
         Angry();
+        _textHp.text = _health.ToString();
     }
 
     private void GroundCheck()
@@ -77,7 +80,7 @@ public class SamuraiController : MonoBehaviour
         _isAttacking = false;
         _animator.SetInteger("StateSamurai", 3);
         Attack();
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         _animator.SetInteger("StateSamurai", 1);
         _isAttacking = true;
     }
@@ -103,6 +106,7 @@ public class SamuraiController : MonoBehaviour
             if (hit.collider != null)
             {
                 _rigidbody.velocity = Vector2.up * _jumpHeight;
+                _animator.SetInteger("StateSamurai", 4);
             }
         }
         else if (transform.position.x > _player.position.x)
@@ -111,6 +115,7 @@ public class SamuraiController : MonoBehaviour
             if (hit.collider != null)
             {
                 _rigidbody.velocity = Vector2.up * _jumpHeight;
+                _animator.SetInteger("StateSamurai", 4);
             }
             transform.localRotation = Quaternion.Euler(0, 180, 0);
         }
