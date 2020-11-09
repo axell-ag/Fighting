@@ -2,34 +2,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : CharacterController
+public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private Transform _groundCheck;
     [SerializeField] private Joystick _joystick;
+    [SerializeField] private Transform _groundCheck;
+    [SerializeField] private Transform _attackPose;
     [SerializeField] private LayerMask _whatIsGround;
-    [SerializeField] private CharacterAttack _characterAttack;
+    [SerializeField] private LayerMask _wahtIsEnemy;
+    [SerializeField] private float _attackRange;
+
+    private Rigidbody2D _rigidbody;
+    private Animator _animator;
+
+    private int _damage;
+    [SerializeField] private float _health;
+    private float _armor;
+    private float _speed = 5f;
+    private float _jumpHeight = 10f;
+    private bool _isGrounded = true;
+    private bool _isAttacking = false;
 
     public void OnAttackButtonDown()
     {
         if (!_isAttacking)
         {
             _isAttacking = true;
-            //_characterAttack = new CharacterAttack { };
-            _characterAttack.Attack();
+            Attack();
             _animator.SetInteger("StateSwordsman", 5);
             StartCoroutine(DoAttack());   
         }
     }
 
-    private new void Start()
+    public void Attack()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            colliders[i].GetComponent<SamuraiController>().TakeDamage(_damage);
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(_attackPose.position, _attackRange);
+    }
+
+    private void Start()
     {
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _damage = Random.Range(5, 15);
         _health = 100f;
-        print(_health);
-        _speed = 8f;
-        _jumpHeight = 10f;
-        _isAttacking = false;
     }
     private void Update()
     {
@@ -86,6 +110,7 @@ public class PlayerController : CharacterController
     {
         _health -= Damage;
         _animator.SetInteger("StateSwordsman", 4);
+        print(_health);
         if (_health <= 0)
         {
             _animator.SetInteger("StateSwordsman", 6);

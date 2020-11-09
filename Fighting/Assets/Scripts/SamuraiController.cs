@@ -5,29 +5,23 @@ using UnityEngine;
 public class SamuraiController : MonoBehaviour
 {
     [SerializeField] private Transform _groundCheck;
-    [SerializeField] private LayerMask _whatIsGround;
-
     [SerializeField] private Transform _attackPose;
-    [SerializeField] private float _attackRange;
+    [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _wahtIsEnemy;
-    [SerializeField] private int _damage;
-    [SerializeField] private int _positionOfPatrol;
-    [SerializeField] private Transform _point;
-    [SerializeField] private float _stoppingDistance;
+    [SerializeField] private float _attackRange;
+
     private Rigidbody2D _rigidbody;
-    private float _health;
     private Animator _animator;
 
+    [SerializeField] private float _health;
+    private int _damage;
     private float _armor;
-    private float _speed;
-    private float _jumpHeight;
+    private float _speed = 5f;
+    private float _jumpHeight = 12f;
     private bool _isGrounded = true;
     private bool _isAttacking = true;
 
     [SerializeField] private Transform _player;
-    private bool _chill = false;
-    private bool _angry = false;
-    private bool _goBack = false;
 
     public void Attack()
     {
@@ -38,15 +32,18 @@ public class SamuraiController : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    public void TakeDamage(int Damage)
     {
-        if (collision.gameObject.name == "Player" && _isAttacking)
+        _health -= Damage;
+        _animator.SetInteger("StateSamurai", 5);
+        print(_health);
+        if (_health <= 0)
         {
-            StartCoroutine(DoAttack());
+            _animator.SetInteger("StateSamurai", 6);
+            StartCoroutine(SumaraiDies());
+            //gameObject.SetActive(false);
         }
     }
-
-
 
     private void OnDrawGizmosSelected()
     {
@@ -56,11 +53,11 @@ public class SamuraiController : MonoBehaviour
 
     private void Start()
     {
+        _health = 100f;
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
-        _health = 100f;
-        _speed = 5f;
-        _jumpHeight = 12f;
+        Physics2D.queriesStartInColliders = false;
+        _damage = Random.Range(5, 15);
     }
 
     private void Update()
@@ -79,46 +76,50 @@ public class SamuraiController : MonoBehaviour
     {
         _isAttacking = false;
         _animator.SetInteger("StateSamurai", 3);
-        print("Нанесли урон игроку");
         Attack();
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         _animator.SetInteger("StateSamurai", 1);
         _isAttacking = true;
-        print(_isAttacking);
     }
 
     private void Angry()
     {
-        //transform.position = Vector2.MoveTowards(transform.position, _player.position, _speed * Time.deltaTime);
-        /*if (Vector2.Distance(transform.position, _player.position) < 2f)
+        RaycastHit2D hit;
+
+        if (Vector2.Distance(transform.position, _player.position) < 1.7f && _isAttacking)
         {
-            // Swap the position of the cylinder.
-            //transform.position = new Vector2(transform.position.x - .5f, transform.position.y);
-            //transform.position = transform.position;
-            _animator.SetInteger("StateSamurai", 3);
-        }*/
-        if (Vector2.Distance(transform.position, _player.position) > 2f)
+            StartCoroutine(DoAttack());
+        }
+        if (Vector2.Distance(transform.position, _player.position) > 1.7f)
         {
             transform.position = Vector2.MoveTowards(transform.position, _player.position, _speed * Time.deltaTime);
             _animator.SetInteger("StateSamurai", 2);
         }
 
-
         if (transform.position.x < _player.position.x)
         {
             transform.localRotation = Quaternion.Euler(0, 0, 0);
+            hit = Physics2D.Raycast(_attackPose.position, Vector2.right, 0.1f, _whatIsGround);
+            if (hit.collider != null)
+            {
+                _rigidbody.velocity = Vector2.up * _jumpHeight;
+            }
         }
         else if (transform.position.x > _player.position.x)
         {
+            hit = Physics2D.Raycast(_attackPose.position, Vector2.left, 0.1f, _whatIsGround);
+            if (hit.collider != null)
+            {
+                _rigidbody.velocity = Vector2.up * _jumpHeight;
+            }
             transform.localRotation = Quaternion.Euler(0, 180, 0);
         }
+
     }
 
-    /*private void OnCollisionEnter2D(Collision2D collision)
+    private IEnumerator SumaraiDies()
     {
-        if (collision.gameObject.name == "Player")
-        {
-            collision.gameObject.GetComponent<Rigidbody2D>().AddForce(transform.up * 5f, ForceMode2D.Impulse);
-        }
-    }*/
+        yield return new WaitForSeconds(1f);
+        gameObject.SetActive(false);
+    }
 }

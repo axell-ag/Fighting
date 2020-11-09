@@ -18,9 +18,9 @@ public class CharacterAttack : MonoBehaviour
             }
     }
 
-    private void OnDrawGizmosSelected()
+    /*private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(_attackPose.position, _attackRange);
-    }
+    }*/
 }
