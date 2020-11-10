@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _wahtIsEnemy;
     [SerializeField] private float _attackRange;
-    [SerializeField] private Text _textHp;
+    [SerializeField] private Text _textHp, _textArmor, _textAttack;
     [SerializeField] private GameObject _effect;
 
     private Rigidbody2D _rigidbody;
@@ -24,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private float _jumpHeight = 12f;
     private bool _isGrounded = true;
     private bool _isAttacking = false;
-    private Vector2 moveVelocity;
 
     public void OnAttackButtonDown()
     {
@@ -39,6 +38,7 @@ public class PlayerController : MonoBehaviour
 
     public void Attack()
     {
+        _damage = Random.Range(5, 15);
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -46,17 +46,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-
-
-    /*private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Player")
-        {
-            Instantiate(_effect, transform.position, transform.rotation);
-            Destroy(gameObject);
-        }
-    }*/
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -69,12 +58,17 @@ public class PlayerController : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _damage = Random.Range(5, 15);
         _health = 100f;
+        _armor = 50f;
     }
     private void Update()
     {
         GroundCheck();
         Flip();
         _textHp.text = _health.ToString();
+        _textArmor.text = _armor.ToString();
+        _textAttack.text = _damage.ToString();
+
+
     }
 
     private void FixedUpdate()
@@ -127,20 +121,29 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(int Damage)
     {
-        _health -= Damage;
         _animator.SetInteger("StateSwordsman", 4);
-        print(_health);
+        if (_armor > 0)
+        {
+            Damage /= 2;
+            _armor -= Damage;
+            _health -= Damage;
+        }
+        else if (_armor <= 0)
+        {
+            _armor = 0f;
+            _health -= Damage;
+        }
         if (_health <= 0)
         {
+            _health = 0;
             _animator.SetInteger("StateSwordsman", 6);
             StartCoroutine(PlayerDies());
-            //gameObject.SetActive(false);
         }
     }
 
     private IEnumerator DoAttack()
     {
-        yield return new WaitForSeconds(.6f);
+        yield return new WaitForSeconds(1f);
         _isAttacking = false;
     }
 

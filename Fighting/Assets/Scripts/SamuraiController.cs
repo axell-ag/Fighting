@@ -10,7 +10,7 @@ public class SamuraiController : MonoBehaviour
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _wahtIsEnemy;
     [SerializeField] private float _attackRange;
-    [SerializeField] private Text _textHp;
+    [SerializeField] private Text _textHp, _textArmor, _textAttack;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;
@@ -27,6 +27,7 @@ public class SamuraiController : MonoBehaviour
 
     public void Attack()
     {
+        _damage = Random.Range(7, 20);
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -36,14 +37,29 @@ public class SamuraiController : MonoBehaviour
 
     public void TakeDamage(int Damage)
     {
-        _health -= Damage;
         _animator.SetInteger("StateSamurai", 5);
-        print(_health);
+        if (_armor > 0)
+        {
+            Damage /= 2;
+            _armor -= Damage;
+            _health -= Damage;
+        }
+        else if (_armor <= 0)
+        {
+            _armor = 0f;
+            _health -= Damage;
+        }
+        if (_health <= 10)
+        {
+            _health = 20f;
+            _speed = 8f;
+            _armor = 10f;
+        }
         if (_health <= 0)
         {
+            _health = 0;
             _animator.SetInteger("StateSamurai", 6);
             StartCoroutine(SumaraiDies());
-            //gameObject.SetActive(false);
         }
     }
 
@@ -56,10 +72,11 @@ public class SamuraiController : MonoBehaviour
     private void Start()
     {
         _health = 100f;
+        _armor = 20f;
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         Physics2D.queriesStartInColliders = false;
-        _damage = Random.Range(5, 15);
+        _damage = Random.Range(7, 20);
     }
 
     private void Update()
@@ -67,6 +84,8 @@ public class SamuraiController : MonoBehaviour
         GroundCheck();
         Angry();
         _textHp.text = _health.ToString();
+        _textArmor.text = _armor.ToString();
+        _textAttack.text = _damage.ToString();
     }
 
     private void GroundCheck()
@@ -80,7 +99,7 @@ public class SamuraiController : MonoBehaviour
         _isAttacking = false;
         _animator.SetInteger("StateSamurai", 3);
         Attack();
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.7f);
         _animator.SetInteger("StateSamurai", 1);
         _isAttacking = true;
     }
@@ -89,7 +108,7 @@ public class SamuraiController : MonoBehaviour
     {
         RaycastHit2D hit;
 
-        if (Vector2.Distance(transform.position, _player.position) < 1.7f && _isAttacking)
+        if (Vector2.Distance(transform.position, _player.position) <= 1.7f && _isAttacking)
         {
             StartCoroutine(DoAttack());
         }
