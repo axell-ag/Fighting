@@ -20,10 +20,11 @@ public class PlayerController : MonoBehaviour
     private int _damage;
     [SerializeField] private float _health;
     private float _armor;
-    private float _speed = 7f;
+    private float _speed;
     private float _jumpHeight = 12f;
     private bool _isGrounded = true;
     private bool _isAttacking = false;
+    private Vector2 moveVelocity;
 
     public void OnAttackButtonDown()
     {
@@ -44,6 +45,8 @@ public class PlayerController : MonoBehaviour
             colliders[i].GetComponent<SamuraiController>().TakeDamage(_damage);
         }
     }
+
+
 
 
     /*private void OnCollisionEnter2D(Collision2D collision)
@@ -77,22 +80,23 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
+        _rigidbody.velocity = new Vector2(_speed, _rigidbody.velocity.y);
     }
 
     private void MovePlayer()
     {
         if (_joystick.Horizontal != 0 && !_isAttacking && _health > 0)
         {
-            _rigidbody.velocity = new Vector2(_joystick.Horizontal * _speed, _rigidbody.velocity.y);
+            _speed = 7f * _joystick.Horizontal;
             _effect.SetActive(true);
             _animator.SetInteger("StateSwordsman", 2);
         }
-        else if (_joystick.Horizontal == 0 && !_isAttacking && _health > 0)
+        if (_joystick.Horizontal == 0 && !_isAttacking && _health > 0)
         {
+            _speed = 0f;
             _effect.SetActive(false);
             _animator.SetInteger("StateSwordsman", 1);
         }
-
         if (_joystick.Vertical >= .9f && _isGrounded && !_isAttacking && _health > 0)
         {
             _rigidbody.velocity = Vector2.up * _jumpHeight;
