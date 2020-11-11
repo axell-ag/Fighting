@@ -12,13 +12,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _wahtIsEnemy;
     [SerializeField] private float _attackRange;
     [SerializeField] private Text _textHp, _textArmor, _textAttack;
-    [SerializeField] private GameObject _effect;
+    [SerializeField] private GameObject _effect, _loseScreen;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;
+    [SerializeField] private Main _main;
 
     private int _damage;
-    [SerializeField] private float _health;
+    private float _health;
     private float _armor;
     private float _speed;
     private float _jumpHeight = 12f;
@@ -56,6 +57,7 @@ public class PlayerController : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
+        //_main = GetComponent<Main>();
         _damage = Random.Range(5, 15);
         _health = 100f;
         _armor = 50f;
@@ -81,7 +83,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_joystick.Horizontal != 0 && !_isAttacking && _health > 0)
         {
-            _speed = 7f * _joystick.Horizontal;
+            _speed = 10f * _joystick.Horizontal;
             _effect.SetActive(true);
             _animator.SetInteger("StateSwordsman", 2);
         }
@@ -91,12 +93,19 @@ public class PlayerController : MonoBehaviour
             _effect.SetActive(false);
             _animator.SetInteger("StateSwordsman", 1);
         }
-        if (_joystick.Vertical >= .9f && _isGrounded && !_isAttacking && _health > 0)
+        /*if (_joystick.Vertical >= .9f && _isGrounded && !_isAttacking && _health > 0)
+        {
+            _rigidbody.velocity = Vector2.up * _jumpHeight;
+        }*/
+    }
+
+    public void Jump()
+    {
+        if (_isGrounded && !_isAttacking && _health > 0)
         {
             _rigidbody.velocity = Vector2.up * _jumpHeight;
         }
     }
-
     private void Flip()
     {
         if (_joystick.Horizontal < 0)
@@ -150,6 +159,8 @@ public class PlayerController : MonoBehaviour
     private IEnumerator PlayerDies()
     {
         yield return new WaitForSeconds(2f);
-        gameObject.SetActive(false);
+        _main.GetComponent<Main>().PauseOn();
+        _loseScreen.SetActive(true);
+        //gameObject.SetActive(false);
     }
 }

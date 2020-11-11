@@ -6,16 +6,33 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviour
 {
     [SerializeField] private Text _textTimer;
-    private float _timer = 60f;
+    [SerializeField] private GameObject _loseScreen;
+    [SerializeField] private Main _main;
+    private float _time = 60f;
     void Start()
     {
-        _textTimer.text = _timer.ToString();
+        _textTimer.text = _time.ToString();
+        _main = GetComponent<Main>();
+        _main._timeScale = 1f;
     }
 
    
-    void Update()
+    public void Update()
     {
-        _timer -= Time.deltaTime;
-        _textTimer.text =  Mathf.Round(_timer).ToString();
+        //_time -= Time.deltaTime;
+        _textTimer.text =  Mathf.Round(_time).ToString();
+        if (_main._timeScale == 1)
+        {
+            _time -= Time.deltaTime;
+        }
+        if (_time <= 0f)
+        {
+            _loseScreen.SetActive(true);
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
     }
 }

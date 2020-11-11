@@ -11,17 +11,20 @@ public class SamuraiController : MonoBehaviour
     [SerializeField] private LayerMask _wahtIsEnemy;
     [SerializeField] private float _attackRange;
     [SerializeField] private Text _textHp, _textArmor, _textAttack;
+    [SerializeField] private GameObject _winScreen;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;
+    [SerializeField] private Main _main;
 
-    [SerializeField] private float _health;
+    private float _health;
     private int _damage;
     private float _armor;
-    private float _speed = 5f;
+    private float _speed = 9f;
     private float _jumpHeight = 12f;
     private bool _isGrounded = true;
     private bool _isAttacking = true;
+    private bool _aggressive = false;
 
     [SerializeField] private Transform _player;
 
@@ -49,11 +52,12 @@ public class SamuraiController : MonoBehaviour
             _armor = 0f;
             _health -= Damage;
         }
-        if (_health <= 10)
+        if (_health <= 10 && !_aggressive)
         {
             _health = 20f;
             _speed = 8f;
             _armor = 10f;
+            _aggressive = true;
         }
         if (_health <= 0)
         {
@@ -99,7 +103,7 @@ public class SamuraiController : MonoBehaviour
         _isAttacking = false;
         _animator.SetInteger("StateSamurai", 3);
         Attack();
-        yield return new WaitForSeconds(.7f);
+        yield return new WaitForSeconds(1.2f);
         _animator.SetInteger("StateSamurai", 1);
         _isAttacking = true;
     }
@@ -143,7 +147,11 @@ public class SamuraiController : MonoBehaviour
 
     private IEnumerator SumaraiDies()
     {
+        //_animator.SetInteger("StateSamurai", 1);
         yield return new WaitForSeconds(1f);
-        gameObject.SetActive(false);
+        //_main.GetComponent<Main>
+        _main.GetComponent<Main>().PauseOn();
+        _winScreen.SetActive(true);
+        //gameObject.SetActive(false);
     }
 }
