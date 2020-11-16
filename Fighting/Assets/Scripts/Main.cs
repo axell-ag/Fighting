@@ -7,7 +7,9 @@ public class Main : MonoBehaviour
 {
     [SerializeField] private PlayerController _playerController;
     [SerializeField] private SamuraiController _samuraiController;
+    [SerializeField] private GameObject _Hp;
     public float _timeScale;
+    public bool isBonus = false;
     public void ReloadLevel()
     {
         _timeScale = 1f;
@@ -16,7 +18,7 @@ public class Main : MonoBehaviour
         _samuraiController.enabled = true;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-    public void PauseOn ()
+    public void PauseOn()
     {
         _timeScale = 0f;
         Time.timeScale = 0f;

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : CharacterController
 {
-    [SerializeField] private Joystick _joystick;
+    /*[SerializeField] private Joystick _joystick;
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private Transform _attackPose;
     [SerializeField] private LayerMask _whatIsGround;
@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     private float _speed;
     private float _jumpHeight = 12f;
     private bool _isGrounded = true;
-    private bool _isAttacking = false;
+    private bool _isAttacking = false;*/
 
     public void OnAttackButtonDown()
     {
@@ -37,15 +37,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void Attack()
+    /*public void Attack()
     {
-        _damage = Random.Range(5, 15);
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
         for (int i = 0; i < colliders.Length; i++)
         {
             colliders[i].GetComponent<SamuraiController>().TakeDamage(_damage);
         }
-    }
+    }*/
 
     private void OnDrawGizmosSelected()
     {
@@ -57,15 +56,17 @@ public class PlayerController : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
-        //_main = GetComponent<Main>();
-        _damage = Random.Range(5, 15);
-        _health = 100f;
-        _armor = 50f;
+        this.GetComponent<PlayerController>()._damage = 7;
+        //this._damage = 7;
+        this.GetComponent<PlayerController>()._health = 100f;
+        this.GetComponent<PlayerController>()._armor = 50f;
+        _isAttacking = false;
     }
     private void Update()
     {
         GroundCheck();
         Flip();
+        Dies();
         _textHp.text = _health.ToString();
         _textArmor.text = _armor.ToString();
         _textAttack.text = _damage.ToString();
@@ -93,10 +94,6 @@ public class PlayerController : MonoBehaviour
             _effect.SetActive(false);
             _animator.SetInteger("StateSwordsman", 1);
         }
-        /*if (_joystick.Vertical >= .9f && _isGrounded && !_isAttacking && _health > 0)
-        {
-            _rigidbody.velocity = Vector2.up * _jumpHeight;
-        }*/
     }
 
     public void Jump()
@@ -118,7 +115,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void GroundCheck()
+    /*private void GroundCheck()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsGround);
         _isGrounded = colliders.Length > 1;
@@ -126,9 +123,9 @@ public class PlayerController : MonoBehaviour
         {
             _animator.SetInteger("StateSwordsman", 3);
         }
-    }
+    }*/
 
-    public void TakeDamage(int Damage)
+    /*public void TakeDamage(int Damage)
     {
         _animator.SetInteger("StateSwordsman", 4);
         if (_armor > 0)
@@ -148,7 +145,7 @@ public class PlayerController : MonoBehaviour
             _animator.SetInteger("StateSwordsman", 6);
             StartCoroutine(PlayerDies());
         }
-    }
+    }*/
 
     private IEnumerator DoAttack()
     {
@@ -156,11 +153,19 @@ public class PlayerController : MonoBehaviour
         _isAttacking = false;
     }
 
-    private IEnumerator PlayerDies()
+    public void Dies()
+    {
+        if (_health <= 0)
+        {
+            _main.GetComponent<Main>().PauseOn();
+            _loseScreen.SetActive(true);
+        }
+    }
+    /*private IEnumerator PlayerDies()
     {
         yield return new WaitForSeconds(2f);
         _main.GetComponent<Main>().PauseOn();
         _loseScreen.SetActive(true);
         //gameObject.SetActive(false);
-    }
+    }*/
 }

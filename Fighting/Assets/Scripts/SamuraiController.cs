@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SamuraiController : MonoBehaviour
+public class SamuraiController : CharacterController
 {
-    [SerializeField] private Transform _groundCheck;
-    [SerializeField] private Transform _attackPose;
-    [SerializeField] private LayerMask _whatIsGround;
-    [SerializeField] private LayerMask _wahtIsEnemy;
+    /*[SerializeField] private Transform _groundCheck, _attackPose, _player;
+    [SerializeField] private LayerMask _whatIsGround, _wahtIsEnemy;
     [SerializeField] private float _attackRange;
     [SerializeField] private Text _textHp, _textArmor, _textAttack;
     [SerializeField] private GameObject _winScreen;
+    [SerializeField] private Main _main;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;
-    [SerializeField] private Main _main;
 
     private float _health;
     private int _damage;
@@ -26,19 +24,21 @@ public class SamuraiController : MonoBehaviour
     private bool _isAttacking = true;
     private bool _aggressive = false;
 
-    [SerializeField] private Transform _player;
+    [SerializeField] private Transform _hp;
+    [SerializeField] private GameObject _bonus;
+    private bool isBonus = false;
+    private float _waitTime;*/
 
-    public void Attack()
+    /*public void Attack()
     {
-        _damage = Random.Range(7, 20);
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
         for (int i = 0; i < colliders.Length; i++)
         {
             colliders[i].GetComponent<PlayerController>().TakeDamage(_damage);
         }
-    }
+    }*/
 
-    public void TakeDamage(int Damage)
+    /*public void TakeDamage(int Damage)
     {
         _animator.SetInteger("StateSamurai", 5);
         if (_armor > 0)
@@ -65,7 +65,7 @@ public class SamuraiController : MonoBehaviour
             _animator.SetInteger("StateSamurai", 6);
             StartCoroutine(SumaraiDies());
         }
-    }
+    }*/
 
     private void OnDrawGizmosSelected()
     {
@@ -73,32 +73,37 @@ public class SamuraiController : MonoBehaviour
         Gizmos.DrawWireSphere(_attackPose.position, _attackRange);
     }
 
-    private void Start()
+    private new void Start()
     {
-        _health = 100f;
-        _armor = 20f;
+        this.GetComponent<SamuraiController>()._health = 10f;
+        this.GetComponent<SamuraiController>()._armor = 0f;
+        _speed = 9f;
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         Physics2D.queriesStartInColliders = false;
-        _damage = Random.Range(7, 20);
+        this.GetComponent<SamuraiController>()._damage = 10;
+
+        /*_waitTime = Random.Range(1, 20);
+        StartCoroutine(EnableBonus());*/
     }
 
     private void Update()
     {
         GroundCheck();
         Angry();
+        DiesSamurai();
         _textHp.text = _health.ToString();
         _textArmor.text = _armor.ToString();
         _textAttack.text = _damage.ToString();
     }
 
-    private void GroundCheck()
+    /*private void GroundCheck()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsGround);
         _isGrounded = colliders.Length > 1;
-    }
+    }*/
 
-    private IEnumerator DoAttack()
+    /*private IEnumerator DoAttack()
     {
         _isAttacking = false;
         _animator.SetInteger("StateSamurai", 3);
@@ -106,9 +111,18 @@ public class SamuraiController : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         _animator.SetInteger("StateSamurai", 1);
         _isAttacking = true;
+    }*/
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Hp")
+        {
+            _health += 10f;
+            collision.gameObject.SetActive(false);
+        }
     }
 
-    private void Angry()
+    /*private void Angry()
     {
         RaycastHit2D hit;
 
@@ -143,9 +157,17 @@ public class SamuraiController : MonoBehaviour
             transform.localRotation = Quaternion.Euler(0, 180, 0);
         }
 
-    }
+    }*/
 
-    private IEnumerator SumaraiDies()
+    public void DiesSamurai()
+    {
+        if (_health <= 0)
+        {
+            _main.GetComponent<Main>().PauseOn();
+            _winScreen.SetActive(true);
+        }
+    }
+    /*private IEnumerator SumuraiDies()
     {
         //_animator.SetInteger("StateSamurai", 1);
         yield return new WaitForSeconds(1f);
@@ -153,5 +175,12 @@ public class SamuraiController : MonoBehaviour
         _main.GetComponent<Main>().PauseOn();
         _winScreen.SetActive(true);
         //gameObject.SetActive(false);
-    }
+    }*/
+
+    /*IEnumerator EnableBonus()
+    {
+        yield return new WaitForSeconds(_waitTime);
+        _bonus.SetActive(true);
+        isBonus = true;
+    }*/
 }

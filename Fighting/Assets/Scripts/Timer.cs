@@ -19,7 +19,6 @@ public class Timer : MonoBehaviour
    
     public void Update()
     {
-        //_time -= Time.deltaTime;
         _textTimer.text =  Mathf.Round(_time).ToString();
         if (_main._timeScale == 1)
         {
