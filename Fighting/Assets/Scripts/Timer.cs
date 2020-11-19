@@ -9,14 +9,13 @@ public class Timer : MonoBehaviour
     [SerializeField] private GameObject _loseScreen;
     [SerializeField] private Main _main;
     private float _time = 60f;
+
     void Start()
     {
         _textTimer.text = _time.ToString();
         _main = GetComponent<Main>();
         _main._timeScale = 1f;
     }
-
-   
     public void Update()
     {
         _textTimer.text =  Mathf.Round(_time).ToString();

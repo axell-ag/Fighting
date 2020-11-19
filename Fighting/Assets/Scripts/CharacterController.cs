@@ -21,28 +21,9 @@ public class CharacterController : MonoBehaviour
     protected float _jumpHeight = 12f;
     protected bool _isGrounded = true;
     protected bool _isAttacking = true;
-    protected bool _aggressive = false;
 
-    private PlayerController playerController;
-    private SamuraiController samuraiController;
-
-    /*[SerializeField] protected Transform _hp;
-    [SerializeField] protected GameObject _bonus;
-    protected bool isBonus = false;
-    protected float _waitTime;*/
-
-    protected void Start()
+    public virtual void MoveCharacter()
     {
-        _animator = GetComponent<Animator>();
-        _rigidbody = GetComponent<Rigidbody2D>();
-        playerController = GetComponent<PlayerController>();
-        samuraiController = GetComponent<SamuraiController>();
-    }
-
-    protected void Angry()
-    {
-        RaycastHit2D hit;
-
         if (Vector2.Distance(transform.position, _player.position) <= 1.7f && _isAttacking)
         {
             StartCoroutine(DoAttack());
@@ -55,28 +36,21 @@ public class CharacterController : MonoBehaviour
 
         if (transform.position.x < _player.position.x)
         {
-            transform.localRotation = Quaternion.Euler(0, 0, 0);
-            hit = Physics2D.Raycast(_attackPose.position, Vector2.right, 0.1f, _whatIsGround);
-            if (hit.collider != null)
-            {
-                _rigidbody.velocity = Vector2.up * _jumpHeight;
-                _animator.SetInteger("StateSamurai", 4);
-            }
+            JumpEnemy(0);
         }
-        else if (transform.position.x > _player.position.x)
+        else
         {
-            hit = Physics2D.Raycast(_attackPose.position, Vector2.left, 0.1f, _whatIsGround);
-            if (hit.collider != null)
-            {
-                _rigidbody.velocity = Vector2.up * _jumpHeight;
-                _animator.SetInteger("StateSamurai", 4);
-            }
-            transform.localRotation = Quaternion.Euler(0, 180, 0);
+            JumpEnemy(180);
         }
-
     }
 
-    public void Attack()
+    protected void GroundCheck()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsGround);
+        _isGrounded = colliders.Length > 1;
+    }
+
+    protected void Attack()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_attackPose.position, _attackRange, _wahtIsEnemy);
         for (int i = 0; i < colliders.Length; i++)
@@ -85,7 +59,26 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int Damage)
+    private void Start()
+    {
+        _animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody2D>();
+    }
+
+    private void JumpEnemy(float rotation)
+    {
+        RaycastHit2D hit;
+
+        hit = Physics2D.Raycast(_attackPose.position, Vector2.right, 0.1f, _whatIsGround);
+        if (hit.collider != null)
+        {
+            _rigidbody.velocity = Vector2.up * _jumpHeight;
+            _animator.SetInteger("StateSamurai", 4);
+        }
+        transform.localRotation = Quaternion.Euler(0, rotation, 0);
+    }
+
+    private void TakeDamage(int Damage)
     {
         _animator.SetInteger("StateSwordsman", 4);
         _animator.SetInteger("StateSamurai", 5);
@@ -100,17 +93,6 @@ public class CharacterController : MonoBehaviour
             _armor = 0f;
             _health -= Damage;
         }
-        /*if (_health <= 0)
-        {
-            _health = 0;
-            *//*_animator.SetInteger("StateSwordsman", 6);
-            _animator.SetInteger("StateSamurai", 6);*/
-            /*this.GetComponent<PlayerController>().Dies();
-            this.GetComponent<SamuraiController>().DiesSamurai();*//*
-
-            this.playerController.Dies();
-            this.samuraiController.DiesSamurai();
-        }*/
     }
 
     private IEnumerator DoAttack()
@@ -121,15 +103,5 @@ public class CharacterController : MonoBehaviour
         yield return new WaitForSeconds(1.2f);
         _animator.SetInteger("StateSamurai", 1);
         _isAttacking = true;
-    }
-
-    protected void GroundCheck()
-    {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsGround);
-        _isGrounded = colliders.Length > 1;
-        if (!_isGrounded)
-        {
-            _animator.SetInteger("StateSwordsman", 3);
-        }
     }
 }

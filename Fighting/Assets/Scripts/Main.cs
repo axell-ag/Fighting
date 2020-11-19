@@ -5,31 +5,28 @@ using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
-    [SerializeField] private PlayerController _playerController;
-    [SerializeField] private SamuraiController _samuraiController;
-    [SerializeField] private GameObject _Hp;
+    [SerializeField] private Player _player;
+    [SerializeField] private Samurai _samurai;
     public float _timeScale;
-    public bool isBonus = false;
+
     public void ReloadLevel()
     {
-        _timeScale = 1f;
-        Time.timeScale = 1f;
-        _playerController.enabled = true;
-        _samuraiController.enabled = true;
+        Pause(1f, true);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void PauseOn()
     {
-        _timeScale = 0f;
-        Time.timeScale = 0f;
-        _playerController.enabled = false;
-        _samuraiController.enabled = false;
+        Pause(0f, false);  
     }
     public void PauseOff()
     {
-        _timeScale = 1f;
-        Time.timeScale = 1f;
-        _playerController.enabled = true;
-        _samuraiController.enabled = true;
+        Pause(1f, true);
+    }
+    private void Pause(float timeScale, bool character)
+    {
+        _timeScale = timeScale;
+        Time.timeScale = timeScale;
+        _player.enabled = character;
+        _samurai.enabled = character;
     }
 }
