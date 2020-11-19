@@ -27,8 +27,8 @@ public class Samurai : CharacterController
         Physics2D.queriesStartInColliders = false;
         _health = 100f;
         _armor = 20f;
-        _speed = 9f;
-        _damage = 10;
+        _speed = 8f;
+        _damage = 9;
     }
 
     private void Update()

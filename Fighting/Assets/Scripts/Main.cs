@@ -7,6 +7,7 @@ public class Main : MonoBehaviour
 {
     [SerializeField] private Player _player;
     [SerializeField] private Samurai _samurai;
+    [SerializeField] private GameObject _hp, _attack;
     public float _timeScale;
 
     public void ReloadLevel()
@@ -28,5 +29,15 @@ public class Main : MonoBehaviour
         Time.timeScale = timeScale;
         _player.enabled = character;
         _samurai.enabled = character;
+    }
+    private void Start()
+    {
+        StartCoroutine(StartBonus(_hp, 17f));
+        StartCoroutine(StartBonus(_attack, 50f));
+    }
+    private IEnumerator StartBonus(GameObject bonus, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        bonus.SetActive(true);
     }
 }

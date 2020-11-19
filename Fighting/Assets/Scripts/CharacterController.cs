@@ -22,6 +22,9 @@ public class CharacterController : MonoBehaviour
     protected bool _isGrounded = true;
     protected bool _isAttacking = true;
 
+    private float _bonusHp = 12f;
+    private int _bonusAttack = 5;
+
     public virtual void MoveCharacter()
     {
         if (Vector2.Distance(transform.position, _player.position) <= 1.7f && _isAttacking)
@@ -59,7 +62,7 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-    private void Start()
+    protected void Start()
     {
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
@@ -92,6 +95,20 @@ public class CharacterController : MonoBehaviour
         {
             _armor = 0f;
             _health -= Damage;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.name == "Hp")
+        {
+            _health += _bonusHp;
+            collision.gameObject.SetActive(false);
+        }
+        if (collision.gameObject.name == "Attack")
+        {
+            _damage += _bonusAttack;
+            collision.gameObject.SetActive(false);
         }
     }
 
